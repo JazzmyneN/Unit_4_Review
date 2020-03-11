@@ -38,13 +38,13 @@ window.onload = startUp();
 function startUp() {
    document.getElementById("puzzleTitle").innerHTML = "Puzzle 1";
    document.getElementById("puzzle").innerHTML = drawHitori(hitori1Numbers, hitori1Blocks, hitori1Rating);
-   var puzzleButtons = document.getElementsByClassName('puzzle');
+   var puzzleButtons = document.getElementsByClassName('puzzles');
    for (var i = 0; i < puzzleButtons.length; i++) {
       puzzleButtons[i].onclick = switchPuzzle;
    }
    setupPuzzle();
-   document.getElementById("check").addEventListener("onclick", findErrors);
-   document.getElementById("solve").addEventListener("onclick", showSolution);
+   document.getElementById("check").addEventListener("click", findErrors);
+   document.getElementById("solve").addEventListener("click", showSolution);
 }
 function switchPuzzle(e) {
    if (confirm("You will lose all of your progress on the puzzle. Continue?")) {
@@ -68,41 +68,50 @@ function switchPuzzle(e) {
 function setupPuzzle() {
    allCells = document.querySelectorAll("table#hitoriGrid td");
    for (var i = 0; i < allCells.length; i++) {
-      allCells[i].style.backgroundColor = 'rgb(255, 255, 255)';
+      allCells[i].style.backgroundColor = 'white';
+      allCells[i].style.borderRadius = "0";
+      allCells[i].style.color = "black";
       // set the cell background in responce to the mouse down event
       allCells[i].addEventListener("mousedown", function(e) {
          if (e.shiftKey) {
-            e.target.style.backgroundColor = "rgb(255, 255, 255)";
-            e.target.style.color = "rgb(0, 0, 0)";
+            e.target.style.backgroundColor = "white";
+            e.target.style.color = "black";
             e.target.style.borderRadius = "0";
             e.target.style.cursor = "url(jpf_eraser.png), alias";
          } else if (e.altKey) {
-            e.target.style.backgroundColor = "rgb(0, 0, 0)";
-            e.target.style.color = "rgb(255, 255, 255)";
+            e.target.style.backgroundColor = "black";
+            e.target.style.color = "white";
             e.target.style.borderRadius = "0";
             e.target.style.cursor = "url(jpf_block.png), cell";
          } else {
             e.target.style.backgroundColor = "rgb(101, 101, 101)";
-            e.target.style.color = "rgb(255, 255, 255)";
+            e.target.style.color = "white";
             e.target.style.borderRadius = "50%";
             e.target.style.cursor = "url(jpf_circle.png), pointer";
          }
          e.preventDefault();
-         e.target.addEventListener("mouseup", checkSolution)
+         e.target.addEventListener("mouseup", checkSolution())
       });
    }
 }
 function findErrors() {
    for (var i = 0; i < allCells.length; i++) {
-      if((allCells[i].className = "blocks" && allCells[i].backgroundColor === "rgb(101, 101, 100)") || (allCells[i].className = "circles" && allCells[i].backgroundColor === "rgb(0, 0, 0)")) {
-         allCells[i].style.color = "rgb(255, 0, 0)";
+      var cellColor = allCells[i].style.backgroundColor;
+      var cellClass = allCells[i].className;
+      /* A cell is incorrect if it is in the block class and is not black
+         or in the circle class and is not white */
+      if ((cellClass === "blocks" && cellColor === "rgb(101, 101, 101)") ||
+         (cellClass === "circles" && cellColor === "black")) {
+         allCells[i].style.color = "red";
       }
-   }S
+   }
    setTimeout(function(){ 
       for(var i = 0; i < allCells.length; i++){
-         allCells[i].style.color = "rgb(255, 255, 255)";
+         if(allCells[i].style.color === "red"){
+            allCells[i].style.color = "rgb(255, 255, 255)";
+         }
       }
-   }, 100);
+   }, 1000);
 }
 /* ================================================================= */
 function checkSolution() {
